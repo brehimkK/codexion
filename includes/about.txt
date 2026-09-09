@@ -1,0 +1,34 @@
+codexion/
+│
+├── include/
+│   └── codexion.h
+│
+├── src/
+│   ├── main.c
+│   │
+│   ├── parsing/
+│   │   └── parsing.c
+│   │
+│   ├── init/
+│   │   └── init.c
+│   │
+│   ├── queue/
+│   │   └── queue.c
+│   │
+│   ├── dongles/
+│   │   ├── acquire.c
+│   │   ├── release.c
+│   │   └── order.c
+│   │
+│   ├── threads/
+│   │   ├── coder.c
+│   │   └── monitor.c
+│   │
+│   └── utils/
+│       ├── time.c
+│       ├── sleep.c
+│       ├── log.c
+│       └── cleanup.c
+│
+├── Makefile
+└── README.md
