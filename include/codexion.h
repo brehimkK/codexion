@@ -15,7 +15,7 @@ typedef enum e_scheduler
 	SCHED_POLICY_EDF
 }	t_scheduler;
 
-// Stores all the simulation settings from the command line.
+// Stores all simulation settings from the command line.
 typedef struct s_config
 {
 	int			number_of_coders;
@@ -36,7 +36,7 @@ typedef struct s_request
 	long	deadline;
 }	t_request;
 
-// Stores the waiting coders for one dongle.
+// Stores the waiting requests for one dongle.
 typedef struct s_heap
 {
 	t_request	*items;
@@ -71,7 +71,7 @@ typedef struct s_coder
 	struct s_simulation	*simulation;
 }	t_coder;
 
-// Stores everything shared by the whole simulation.
+// Stores everything shared by the simulation.
 typedef struct s_simulation
 {
 	t_config		config;
@@ -83,5 +83,27 @@ typedef struct s_simulation
 	pthread_mutex_t	stop_mutex;
 	pthread_mutex_t	log_mutex;
 }	t_simulation;
+
+/* Parsing */
+long		ft_check(char *av);
+int			ft_parse(int ac, char **av, t_config *config);
+
+/* Initialization */
+int			init_simulation(t_simulation *simulation, t_config *config);
+
+/* Utilities */
+long		get_time_ms(void);
+int			is_stopped(t_simulation *simulation);
+void		stop_simulation(t_simulation *simulation);
+void		safe_sleep(long duration, t_simulation *simulation);
+void		log_status(t_coder *coder, const char *status);
+
+/* Heap */
+int			heap_init(t_heap *heap, int capacity,
+				t_scheduler scheduler);
+int			push_new_request(t_heap *heap, t_request request);
+t_request	*peek_next_request(t_heap *heap);
+int			pop_next_request(t_heap *heap, t_request *request);
+void		destroy_heap(t_heap *heap);
 
 #endif

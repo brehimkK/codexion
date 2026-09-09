@@ -1,0 +1,122 @@
+                            
+A process is a container created by the operating system that holds everything needed to run a program*(a file on disk (calculator.exe, a.out, etc.)),
+including its memory and threads:
+
+                            PROCESS
+                ┌───────────────────────────────┐
+                │          Code (Shared)        │
+                ├───────────────────────────────┤
+                │          Heap (Shared)        │
+                ├───────────────────────────────┤
+                │   Global Variables (Shared)   │
+                ├───────────────┬───────────────┤
+                │   Thread 1    │   Thread 2    │
+                │               │               │
+                │    Stack      │    Stack      │
+                │  (Private)    │  (Private)    │
+                └───────────────┴───────────────┘
+                         |               |
+    The operating system keeps information about each thread in kernel memory:
+  
+                        KERNEL MEMORY
+                ┌────────────────────────────┐
+                │ Thread Control Block (TCB) │
+                ├────────────────────────────┤
+                │ Thread ID                  │
+                │ Program Counter (PC)       │
+                │ CPU Registers              │
+                │ Stack Pointer (SP)         │
+                │ State                      │
+                │ Priority                   │
+                │ Scheduling Info            │
+                └────────────────────────────┘
+    
+    Relationship:
+
+                             PROGRAM
+                                │
+                                ▼
+                    Contains machine instructions
+                                │
+                                ▼
+                    Operating System creates
+                                │
+                                ▼
+                              THREAD
+                                │
+                                ▼
+                    Executes those instructions
+
+
+    Summary
+    Program → contains the instructions.
+    Thread → executes the instructions.
+    Process → owns the code, heap, globals, and threads.
+    OS Kernel → creates and manages the threads using a TCB.
+
+
+
+    A thread is the smallest unit of execution managed by the operating system.
+    Its job is to execute the process's code. 
+    Each thread has its own stack, registers, and program counter, 
+    while sharing the process's code, heap, 
+    and global variables with the other threads. 
+    A thread may execute the same code as another thread or a different part of the program.
+
+
+
+                                Mutex :
+    A mutex is a synchronization object that stores a lock state allows only one thread at a time to access a shared resource, 
+    preventing race conditions.
+
+      Program
+        │
+        ▼
+      Process
+        │
+        ├── Thread 1 ──┐
+        ├── Thread 2 ──┼──► Mutex (LOCKED / UNLOCKED) ──► Shared Resource
+        └── Thread 3 ──┘
+
+
+
+
+    Coder
+
+    ↓
+
+    Needs a dongle
+
+    ↓
+
+    Dongle busy?
+
+    ↓
+
+    YES
+
+    ↓
+
+    Add request to heap
+
+    ↓
+
+    Wait
+
+    ↓
+
+    Dongle becomes free
+
+    ↓
+
+    Heap says:
+
+    "This coder is next."
+
+    ↓
+
+    Coder wakes up
+
+    ↓
+
+    Takes the dongle
