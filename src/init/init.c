@@ -63,6 +63,7 @@ int	init_simulation(t_simulation *simulation, t_config *config)
 	}
 	if (!init_coders(simulation))
 	{
+		cleanup_dongles(simulation, simulation->config.coders);
 		cleanup_init(simulation);
 		return (0);
 	}

@@ -96,4 +96,8 @@ int	init_coders(t_simulation *simulation);
 void	init_queue(t_queue *queue, int (*cmp)(t_request, t_request));
 int		cmp_fifo(t_request a, t_request b);
 int		cmp_edf(t_request a, t_request b);
+
+/*cleaning*/
+void	cleanup_dongles(t_simulation *simulation, int count);
+
 #endif

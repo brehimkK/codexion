@@ -1,6 +1,6 @@
 #include "codexion.h"
 
-static void	cleanup_dongles(t_simulation *simulation, int count)
+void	cleanup_dongles(t_simulation *simulation, int count)
 {
 	int	i;
 
