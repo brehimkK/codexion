@@ -74,8 +74,8 @@ int	ft_parse(int ac, char **av, t_config *config)
 		printf("Error: number_of_coders is too large\n");
 		return (0);
 	}
-	config->number_of_coders = (int)res;
-	if (config->number_of_coders == 0)
+	config->coders = (int)res;
+	if (config->coders == 0)
 	{
 		printf("Error: number_of_coders must be greater than 0\n");
 		return (0);
@@ -110,17 +110,17 @@ int	ft_parse(int ac, char **av, t_config *config)
 		printf("Error: number_of_compiles_required is too large\n");
 		return (0);
 	}
-	config->number_of_compiles_required = (int)res;
-	if (config->number_of_compiles_required == 0)
+	config->compile_required = (int)res;
+	if (config->compile_required == 0)
 	{
 		printf("Error: number_of_compiles_required must be greater than 0\n");
 		return (0);
 	}
 	config->dongle_cooldown = ft_check(av[7]);
 	if (strcmp(av[8], "fifo") == 0)
-		config->scheduler = SCHED_POLICY_FIFO;
+		config->scheduler = SCHED_FIFO;
 	else if (strcmp(av[8], "edf") == 0)
-		config->scheduler = SCHED_POLICY_EDF;
+		config->scheduler = SCHED_EDF;
 	else
 	{
 		printf("Error: scheduler must be exactly 'fifo' or 'edf'\n");

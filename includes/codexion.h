@@ -10,7 +10,9 @@
 
 typedef enum e_scheduler
 {
+	//first request → first served
 	SCHED_FIFO,
+	//earliest deadline → first served
 	SCHED_EDF
 }	t_scheduler;
 
@@ -28,17 +30,23 @@ typedef struct s_config
 
 typedef struct s_request
 {
+	long	arrival_order;
 	int		coder_id;
 	long	arrival_time;
 	long	deadline;
 }	t_request;
 
+typedef struct s_node
+{
+	t_request		req;
+	struct s_node	*next;
+}	t_node;
+
 typedef struct s_queue
 {
-	t_request		*requests;
-	int				size;
-	int				capacity;
-	t_scheduler		scheduler;
+	t_node	*head;
+	int		size;
+	int		(*cmp)(t_request, t_request);
 }	t_queue;
 
 typedef struct s_dongle
@@ -47,7 +55,7 @@ typedef struct s_dongle
 	int				in_use;
 	long			available_at;
 	pthread_mutex_t	mutex;
-	pthread_cond_t	condition;
+	pthread_cond_t	condition; //sleep until something changes.
 	t_queue			queue;
 }	t_dongle;
 
@@ -67,6 +75,8 @@ typedef struct s_coder
 
 typedef struct s_simulation
 {
+	long			request_counter;
+	pthread_mutex_t	counter_mutex;
 	t_config		config;
 	t_coder			*coders;
 	t_dongle			*dongles;
@@ -77,4 +87,13 @@ typedef struct s_simulation
 	pthread_mutex_t	log_mutex;
 }	t_simulation;
 
+/* Initialization */
+int	init_simulation(t_simulation *simulation, t_config *config);
+int	init_dongles(t_simulation *simulation);
+int	init_coders(t_simulation *simulation);
+
+/* queue */
+void	init_queue(t_queue *queue, int (*cmp)(t_request, t_request));
+int		cmp_fifo(t_request a, t_request b);
+int		cmp_edf(t_request a, t_request b);
 #endif
