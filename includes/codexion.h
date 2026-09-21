@@ -10,10 +10,10 @@
 
 typedef enum e_scheduler
 {
-	//first request → first served
-	SCHED_FIFO,
-	//earliest deadline → first served
-	SCHED_EDF
+	/*first request → first served*/
+	SCHED_TYPE_FIFO,
+	/*earliest deadline → first served*/
+	SCHED_TYPE_EDF
 }	t_scheduler;
 
 typedef struct s_config
@@ -92,12 +92,37 @@ int	init_simulation(t_simulation *simulation, t_config *config);
 int	init_dongles(t_simulation *simulation);
 int	init_coders(t_simulation *simulation);
 
-/* queue */
+/* Parsing */
+int	ft_parse(int ac, char **av, t_config *config);
+long	ft_check(char *av);
+
+/* Queue */
 void	init_queue(t_queue *queue, int (*cmp)(t_request, t_request));
 int		cmp_fifo(t_request a, t_request b);
 int		cmp_edf(t_request a, t_request b);
-
-/*cleaning*/
+int		queue_push(t_queue *queue, t_request request);
+int		queue_pop(t_queue *queue, t_request *request);
+void	queue_clear(t_queue *queue);
+int	queue_peek(t_queue *queue, t_request *request);
+/* Cleaning */
 void	cleanup_dongles(t_simulation *simulation, int count);
+
+/*request*/
+long		get_next_order(t_simulation *simulation);
+t_request	create_request(t_coder *coder);
+
+/*utils*/
+long	get_time_ms(void);
+
+/* Dongles */
+void	get_dongle_order(t_coder *coder, t_dongle **first,
+			t_dongle **second);
+int		acquire_dongles(t_coder *coder);
+void	release_dongle(t_simulation *simulation, t_dongle *dongle);
+void	release_dongles(t_coder *coder);
+
+/* Simulation */
+int		is_running(t_simulation *simulation);
+void	wake_all(t_simulation *simulation);
 
 #endif

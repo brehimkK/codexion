@@ -18,7 +18,7 @@ int	init_dongles(t_simulation *simulation)
 	int	i;
 	int	(*cmp)(t_request, t_request);
 
-	if (simulation->config.scheduler == SCHED_FIFO)
+	if (simulation->config.scheduler == SCHED_TYPE_FIFO)
 		cmp = cmp_fifo;
 	else
 		cmp = cmp_edf;

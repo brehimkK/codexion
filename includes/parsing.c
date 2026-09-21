@@ -118,9 +118,9 @@ int	ft_parse(int ac, char **av, t_config *config)
 	}
 	config->dongle_cooldown = ft_check(av[7]);
 	if (strcmp(av[8], "fifo") == 0)
-		config->scheduler = SCHED_FIFO;
+		config->scheduler = SCHED_TYPE_FIFO;
 	else if (strcmp(av[8], "edf") == 0)
-		config->scheduler = SCHED_EDF;
+		config->scheduler = SCHED_TYPE_FIFO;
 	else
 	{
 		printf("Error: scheduler must be exactly 'fifo' or 'edf'\n");
