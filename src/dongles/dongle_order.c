@@ -8,10 +8,8 @@ void	get_dongle_order(t_coder *coder, t_dongle **first,
 	{
 		*first = coder->dongle_a;
 		*second = coder->dongle_b;
+		return;
 	}
-	else
-	{
-		*first = coder->dongle_b;
-		*second = coder->dongle_a;
-	}
+	*first = coder->dongle_b;
+	*second = coder->dongle_a;
 }

@@ -344,7 +344,172 @@ static int	test_ft_check(void)
 		return (0);
 	return (1);
 }
+typedef struct s_acquire_test
+{
+	t_coder			*coder;
+	pthread_mutex_t	mutex;
+	int				finished;
+	int				result;
+}	t_acquire_test;
 
+static void	*acquire_test_thread(void *arg)
+{
+	t_acquire_test	*test;
+
+	test = (t_acquire_test *)arg;
+	test->result = acquire_dongles(test->coder);
+	pthread_mutex_lock(&test->mutex);
+	test->finished = 1;
+	pthread_mutex_unlock(&test->mutex);
+	return (NULL);
+}
+static int	test_dongles(void)
+{
+	t_config			config;
+	t_simulation		simulation;
+	t_acquire_test		test;
+	pthread_t			thread;
+	long				start;
+	long				elapsed;
+
+	config.coders = 2;
+	config.time_to_burnout = 1000;
+	config.time_to_compile = 200;
+	config.time_to_debug = 300;
+	config.time_to_refactor = 400;
+	config.compile_required = 5;
+	config.dongle_cooldown = 50;
+	config.scheduler = SCHED_TYPE_FIFO;
+
+	if (!init_simulation(&simulation, &config))
+		return (0);
+	pthread_mutex_lock(&simulation.mutex);
+	simulation.running = 1;
+	pthread_mutex_unlock(&simulation.mutex);
+
+	/* Coder 1 acquires both dongles */
+	if (!acquire_dongles(&simulation.coders[0]))
+		return (0);
+	if (!simulation.dongles[0].in_use
+		|| !simulation.dongles[1].in_use)
+		return (0);
+
+	/* Coder 2 must wait while coder 1 owns both dongles */
+	test.coder = &simulation.coders[1];
+	test.finished = 0;
+	test.result = 0;
+	pthread_mutex_init(&test.mutex, NULL);
+	if (pthread_create(&thread, NULL, acquire_test_thread, &test) != 0)
+	{
+		pthread_mutex_destroy(&test.mutex);
+		cleanup_test(&simulation);
+		return (0);
+	}
+	usleep(50000);
+	pthread_mutex_lock(&test.mutex);
+	if (test.finished != 0)
+	{
+		pthread_mutex_unlock(&test.mutex);
+		pthread_mutex_destroy(&test.mutex);
+		cleanup_test(&simulation);
+		pthread_join(thread, NULL);
+		return (0);
+	}
+	pthread_mutex_unlock(&test.mutex);
+
+	/* Release coder 1 → coder 2 should continue */
+	release_dongles(&simulation.coders[0]);
+	pthread_join(thread, NULL);
+
+	pthread_mutex_lock(&test.mutex);
+	if (test.finished != 1 || test.result != 1)
+	{
+		pthread_mutex_unlock(&test.mutex);
+		pthread_mutex_destroy(&test.mutex);
+		cleanup_test(&simulation);
+		return (0);
+	}
+	pthread_mutex_unlock(&test.mutex);
+
+	if (!simulation.dongles[0].in_use
+		|| !simulation.dongles[1].in_use)
+	{
+		pthread_mutex_destroy(&test.mutex);
+		cleanup_test(&simulation);
+		return (0);
+	}
+	release_dongles(&simulation.coders[1]);
+	pthread_mutex_destroy(&test.mutex);
+
+	/* Test cooldown */
+	start = get_time_ms();
+	if (!acquire_dongles(&simulation.coders[0]))
+	{
+		cleanup_test(&simulation);
+		return (0);
+	}
+	elapsed = get_time_ms() - start;
+	if (elapsed < 40)
+	{
+		release_dongles(&simulation.coders[0]);
+		cleanup_test(&simulation);
+		return (0);
+	}
+	printf("\n--- DONGLE TEST ---\n");
+	printf("  first acquisition: PASS\n");
+	printf("  waiting coder: PASS\n");
+	printf("  release and wake: PASS\n");
+	printf("  cooldown wait: %ld ms\n", elapsed);
+	printf("  cooldown: PASS\n");
+
+	release_dongles(&simulation.coders[0]);
+
+	/* Test shutdown of a waiting coder */
+	test.coder = &simulation.coders[0];
+	test.finished = 0;
+	test.result = 1;
+	pthread_mutex_init(&test.mutex, NULL);
+
+	if (!acquire_dongles(&simulation.coders[1]))
+	{
+		pthread_mutex_destroy(&test.mutex);
+		cleanup_test(&simulation);
+		return (0);
+	}
+
+	if (pthread_create(&thread, NULL, acquire_test_thread, &test) != 0)
+	{
+		release_dongles(&simulation.coders[1]);
+		pthread_mutex_destroy(&test.mutex);
+		cleanup_test(&simulation);
+		return (0);
+	}
+
+	usleep(50000);
+	pthread_mutex_lock(&simulation.mutex);
+	simulation.running = 0;
+	pthread_mutex_unlock(&simulation.mutex);
+	wake_all(&simulation);
+
+	pthread_join(thread, NULL);
+	pthread_mutex_lock(&test.mutex);
+	if (test.finished != 1 || test.result != 0)
+	{
+		pthread_mutex_unlock(&test.mutex);
+		release_dongles(&simulation.coders[1]);
+		pthread_mutex_destroy(&test.mutex);
+		cleanup_test(&simulation);
+		return (0);
+	}
+	pthread_mutex_unlock(&test.mutex);
+
+	release_dongles(&simulation.coders[1]);
+	pthread_mutex_destroy(&test.mutex);
+	printf("  shutdown wake: PASS\n");
+
+	cleanup_test(&simulation);
+	return (1);
+}
 int	main(void)
 {
 	printf("\n=== CODEXION TESTS ===\n\n");
@@ -403,6 +568,12 @@ int	main(void)
 	}
 	printf("request: OK\n");
 	printf("initialization: OK\n");
+	if (!test_dongles())
+	{
+		printf("dongles: FAIL\n");
+		return (1);
+	}
+	printf("dongles: OK\n");
 
 	printf("\nALL TESTS PASSED\n");
 	return (0);
