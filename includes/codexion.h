@@ -113,11 +113,13 @@ t_request	create_request(t_coder *coder);
 
 /*utils*/
 long	get_time_ms(void);
+int compile_counter(t_coder *coder);
+void	safe_sleep(t_simulation *simulation, long duration);
 
 /* Dongles */
 void	get_dongle_order(t_coder *coder, t_dongle **first,
 			t_dongle **second);
-int		acquire_dongles(t_coder *coder);
+int		take_dongles(t_coder *coder);
 void	release_dongle(t_simulation *simulation, t_dongle *dongle);
 void	release_dongles(t_coder *coder);
 

@@ -357,7 +357,7 @@ static void	*acquire_test_thread(void *arg)
 	t_acquire_test	*test;
 
 	test = (t_acquire_test *)arg;
-	test->result = acquire_dongles(test->coder);
+	test->result = take_dongles(test->coder);
 	pthread_mutex_lock(&test->mutex);
 	test->finished = 1;
 	pthread_mutex_unlock(&test->mutex);
@@ -388,7 +388,7 @@ static int	test_dongles(void)
 	pthread_mutex_unlock(&simulation.mutex);
 
 	/* Coder 1 acquires both dongles */
-	if (!acquire_dongles(&simulation.coders[0]))
+	if (!take_dongles(&simulation.coders[0]))
 		return (0);
 	if (!simulation.dongles[0].in_use
 		|| !simulation.dongles[1].in_use)
@@ -443,7 +443,7 @@ static int	test_dongles(void)
 
 	/* Test cooldown */
 	start = get_time_ms();
-	if (!acquire_dongles(&simulation.coders[0]))
+	if (!take_dongles(&simulation.coders[0]))
 	{
 		cleanup_test(&simulation);
 		return (0);
@@ -470,7 +470,7 @@ static int	test_dongles(void)
 	test.result = 1;
 	pthread_mutex_init(&test.mutex, NULL);
 
-	if (!acquire_dongles(&simulation.coders[1]))
+	if (!take_dongles(&simulation.coders[1]))
 	{
 		pthread_mutex_destroy(&test.mutex);
 		cleanup_test(&simulation);

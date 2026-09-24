@@ -56,7 +56,7 @@ static void	*coder_test(void *arg)
 
 	test = (t_test *)arg;
 	printf("Coder %d trying...\n", test->coder->id);
-	test->result = acquire_dongles(test->coder);
+	test->result = take_dongles(test->coder);
 	if (!test->result)
 	{
 		printf("Coder %d: acquisition failed\n", test->coder->id);
@@ -130,14 +130,14 @@ static int	test_cooldown(t_config *config)
 	if (!start_simulation_for_test(&simulation, config))
 		return (0);
 	printf("\n--- COOLDOWN TEST ---\n");
-	if (!acquire_dongles(&simulation.coders[0]))
+	if (!take_dongles(&simulation.coders[0]))
 	{
 		cleanup_test(&simulation);
 		return (0);
 	}
 	release_dongles(&simulation.coders[0]);
 	start = get_time_ms();
-	if (!acquire_dongles(&simulation.coders[0]))
+	if (!take_dongles(&simulation.coders[0]))
 	{
 		cleanup_test(&simulation);
 		return (0);
@@ -163,7 +163,7 @@ static void	*waiter_test(void *arg)
 
 	coder = (t_coder *)arg;
 	printf("Coder %d waiting...\n", coder->id);
-	if (acquire_dongles(coder))
+	if (take_dongles(coder))
 	{
 		printf("Coder %d acquired after shutdown\n", coder->id);
 		release_dongles(coder);
@@ -183,7 +183,7 @@ static int	test_shutdown(t_config *config)
 	if (!start_simulation_for_test(&simulation, config))
 		return (0);
 	printf("\n--- SHUTDOWN TEST ---\n");
-	if (!acquire_dongles(&simulation.coders[0]))
+	if (!take_dongles(&simulation.coders[0]))
 	{
 		cleanup_test(&simulation);
 		return (0);
