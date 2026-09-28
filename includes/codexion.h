@@ -85,6 +85,8 @@ typedef struct s_simulation
 	int				running;
 	pthread_mutex_t	mutex;
 	pthread_mutex_t	log_mutex;
+	int	finished_coders;
+	pthread_mutex_t	finished_mutex;
 }	t_simulation;
 
 /* Initialization */
@@ -113,8 +115,12 @@ t_request	create_request(t_coder *coder);
 
 /*utils*/
 long	get_time_ms(void);
-int compile_counter(t_coder *coder);
 void	safe_sleep(t_simulation *simulation, long duration);
+
+/*coder*/
+void *coder_routine(void *arg);
+int	coder_is_finished(t_coder *coder);
+int	finished_coders(t_simulation *simulation);
 
 /* Dongles */
 void	get_dongle_order(t_coder *coder, t_dongle **first,
@@ -126,5 +132,11 @@ void	release_dongles(t_coder *coder);
 /* Simulation */
 int		is_running(t_simulation *simulation);
 void	wake_all(t_simulation *simulation);
+void	stop_simulation(t_simulation *simulation);
 
+/*monitor*/
+int	monitore_check(t_coder *coder);
+
+/*main.c*/
+void set_coder_last_c(t_simulation *simulation,long time);
 #endif

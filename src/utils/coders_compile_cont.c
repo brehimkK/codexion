@@ -1,24 +1,31 @@
 #include "codexion.h"
 
-int compile_counter(t_coder *coder)
+int	coder_is_finished(t_coder *coder)
 {
-    long counter;
-    int i;
-    int j;
-    int coder_c;
+	int	count;
 
-    j = 0;
-    i = coder->simulation->config.coders;
-    counter = coder->simulation->config.compile_required;
-    while (j < i)
-    {
-        pthread_mutex_lock(&coder->simulation->coders[j].mutex);
-        coder_c = coder->simulation->coders[j].compile_count;
-        pthread_mutex_unlock(&coder->simulation->coders[j].mutex);
-        if (coder_c < counter)
-            return(0);
-        else
-            j++;
-    }
-    return(1);
+	pthread_mutex_lock(&coder->mutex);
+	count = coder->compile_count;
+	pthread_mutex_unlock(&coder->mutex);
+	if (count >= coder->simulation->config.compile_required)
+		return (1);
+	return (0);
+}
+
+int	finished_coders(t_simulation *simulation)
+{
+	int	i;
+	int	j;
+
+	i = 0;
+	j = 0;
+	while (i < simulation->config.coders)
+	{
+		if (coder_is_finished(&simulation->coders[i]))
+			j++;
+		i++;
+	}
+	if (j == i)
+		return (1);
+	return (0);
 }

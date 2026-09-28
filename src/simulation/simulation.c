@@ -23,3 +23,9 @@ void	wake_all(t_simulation *simulation)
 		i++;
 	}
 }
+void	stop_simulation(t_simulation *simulation)
+{
+	pthread_mutex_lock(&simulation->mutex);
+	simulation->running = 0;
+	pthread_mutex_unlock(&simulation->mutex);
+}
