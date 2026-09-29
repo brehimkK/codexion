@@ -54,10 +54,15 @@ void *coder_routine(void *arg)
             return(NULL);
         if (coder_is_finished(coder))
         {
+            pthread_mutex_lock(&coder->mutex);
+            coder->finished = 1;
+            pthread_mutex_unlock(&coder->mutex);
+
             pthread_mutex_lock(&coder->simulation->finished_mutex);
             coder->simulation->finished_coders++;
             pthread_mutex_unlock(&coder->simulation->finished_mutex);
-	        return (NULL);
+
+            return (NULL);
         }
     }
     return(NULL);

@@ -71,6 +71,7 @@ typedef struct s_coder
 	int					compile_count;
 	pthread_mutex_t		mutex;
 	struct s_simulation	*simulation;
+	int	finished;
 }	t_coder;
 
 typedef struct s_simulation
@@ -120,7 +121,6 @@ void	safe_sleep(t_simulation *simulation, long duration);
 /*coder*/
 void *coder_routine(void *arg);
 int	coder_is_finished(t_coder *coder);
-int	finished_coders(t_simulation *simulation);
 
 /* Dongles */
 void	get_dongle_order(t_coder *coder, t_dongle **first,
@@ -135,7 +135,7 @@ void	wake_all(t_simulation *simulation);
 void	stop_simulation(t_simulation *simulation);
 
 /*monitor*/
-int	monitore_check(t_coder *coder);
+void	*monitore_check(void *arg);
 
 /*main.c*/
 void set_coder_last_c(t_simulation *simulation,long time);

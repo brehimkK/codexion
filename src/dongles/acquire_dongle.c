@@ -84,6 +84,8 @@ int	take_dongles(t_coder *coder)
 	t_dongle	*second;
 
 	get_dongle_order(coder, &first, &second);
+	if(first == second)
+		return (0);
 	if (!acquire_one(coder, first))
 		return (0);
 	if (!is_running(coder->simulation))
@@ -91,8 +93,6 @@ int	take_dongles(t_coder *coder)
 		release_dongle(coder->simulation, first);
 		return (0);
 	}
-	if(first == second)
-		return (1);
 	if (!acquire_one(coder, second))
 	{
 		release_dongle(coder->simulation, first);

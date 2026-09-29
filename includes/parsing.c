@@ -127,4 +127,5 @@ int	ft_parse(int ac, char **av, t_config *config)
 		return (0);
 	}
 	return (1);
+	
 }
