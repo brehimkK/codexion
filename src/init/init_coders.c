@@ -24,6 +24,7 @@ int	init_coders(t_simulation *simulation)
 		simulation->coders[i].id = i + 1;
 		simulation->coders[i].compile_count = 0;
 		simulation->coders[i].last_compile = 0;
+		simulation->coders[i].finished = 0;
 		simulation->coders[i].simulation = simulation;
 		simulation->coders[i].dongle_a = &simulation->dongles[i];
 		simulation->coders[i].dongle_b
