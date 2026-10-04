@@ -107,6 +107,7 @@ int		queue_push(t_queue *queue, t_request request);
 int		queue_pop(t_queue *queue, t_request *request);
 void	queue_clear(t_queue *queue);
 int	queue_peek(t_queue *queue, t_request *request);
+int		queue_remove_coder(t_queue *queue, int coder_id);
 /* Cleaning */
 void	cleanup_dongles(t_simulation *simulation, int count);
 

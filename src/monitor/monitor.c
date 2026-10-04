@@ -8,8 +8,8 @@ void	*monitore_check(void *arg)
 	long			last_compile;
 	long			time_to_burnout;
 	long			code_id;
+	int				compile_count;
 	t_simulation	*simulation;
-	int finished;
 
 	simulation = arg;
 	coders = simulation->config.coders;
@@ -21,11 +21,16 @@ void	*monitore_check(void *arg)
 		{
 			current = get_time_ms();
 			pthread_mutex_lock(&simulation->coders[i].mutex);
-			finished = simulation->coders[i].finished;
+			compile_count = simulation->coders[i].compile_count;
 			last_compile = simulation->coders[i].last_compile;
 			code_id = simulation->coders[i].id;
 			pthread_mutex_unlock(&simulation->coders[i].mutex);
-			if (!finished && current - last_compile >= time_to_burnout)
+			if (compile_count >= simulation->config.compile_required)
+			{
+				i++;
+				continue ;
+			}
+			if (current - last_compile >= time_to_burnout)
 			{
 				pthread_mutex_lock(&simulation->log_mutex);
 				printf("%ld %ld burned out\n",

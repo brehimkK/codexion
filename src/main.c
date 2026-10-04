@@ -39,12 +39,18 @@ static void	cleanup_simulation(t_simulation *simulation)
 	free(simulation->dongles);
 }
 
+// void check_leaks()
+// {
+// 	system("leaks codexion");
+// }
+
 int	main(int ac, char **av)
 {
 	t_simulation	simulation;
 	int				i;
 	int				created;
 
+	// atexit(check_leaks);
 	if (!ft_parse(ac, av, &simulation.config))
 		return (1);
 	// if (simulation.config.coders == 1)
