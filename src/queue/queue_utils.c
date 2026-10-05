@@ -1,26 +1,36 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   dongle_order.c                                     :+:      :+:    :+:   */
+/*   queue_utils.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: brel-bou <brel-bou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/10/05 12:32:18 by brel-bou          #+#    #+#             */
-/*   Updated: 2026/10/05 12:37:56 by brel-bou         ###   ########.fr       */
+/*   Created: 2026/10/05 12:52:33 by brel-bou          #+#    #+#             */
+/*   Updated: 2026/10/05 12:57:23 by brel-bou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
 
-void	get_dongle_order(t_coder *coder, t_dongle **first,
-		t_dongle **second)
+void	queue_clear(t_queue *queue)
 {
-	if (coder->dongle_a->id <= coder->dongle_b->id)
-	{
-		*first = coder->dongle_a;
-		*second = coder->dongle_b;
+	t_node	*current;
+
+	if (queue == NULL)
 		return ;
+	while (queue->head != NULL)
+	{
+		current = queue->head->next;
+		free(queue->head);
+		queue->head = current;
 	}
-	*first = coder->dongle_b;
-	*second = coder->dongle_a;
+	queue->size = 0;
+}
+
+int	queue_peek(t_queue *queue, t_request *request)
+{
+	if (queue == NULL || queue->head == NULL)
+		return (0);
+	*request = queue->head->req;
+	return (1);
 }

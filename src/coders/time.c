@@ -1,26 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   dongle_order.c                                     :+:      :+:    :+:   */
+/*   time.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: brel-bou <brel-bou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/10/05 12:32:18 by brel-bou          #+#    #+#             */
-/*   Updated: 2026/10/05 12:37:56 by brel-bou         ###   ########.fr       */
+/*   Created: 2026/10/05 14:15:33 by brel-bou          #+#    #+#             */
+/*   Updated: 2026/10/05 14:15:34 by brel-bou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
 
-void	get_dongle_order(t_coder *coder, t_dongle **first,
-		t_dongle **second)
+long	get_time_ms(void)
 {
-	if (coder->dongle_a->id <= coder->dongle_b->id)
-	{
-		*first = coder->dongle_a;
-		*second = coder->dongle_b;
-		return ;
-	}
-	*first = coder->dongle_b;
-	*second = coder->dongle_a;
+	struct timeval	time;
+
+	gettimeofday(&time, NULL);
+	return ((time.tv_sec * 1000L) + (time.tv_usec / 1000L));
+}
+
+void	safe_sleep(t_simulation *simulation, long duration)
+{
+	long	start;
+
+	start = get_time_ms();
+	while (is_running(simulation)
+		&& (get_time_ms() - start < duration))
+		usleep(500);
 }

@@ -1,26 +1,32 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   dongle_order.c                                     :+:      :+:    :+:   */
+/*   dongle_utils.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: brel-bou <brel-bou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/10/05 12:32:18 by brel-bou          #+#    #+#             */
-/*   Updated: 2026/10/05 12:37:56 by brel-bou         ###   ########.fr       */
+/*   Created: 2026/10/05 11:00:00 by brel-bou          #+#    #+#             */
+/*   Updated: 2026/10/05 12:32:02 by brel-bou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
 
-void	get_dongle_order(t_coder *coder, t_dongle **first,
-		t_dongle **second)
+int	request_is_first(t_dongle *dongle, int coder_id)
 {
-	if (coder->dongle_a->id <= coder->dongle_b->id)
+	t_request	head;
+
+	if (queue_peek(&dongle->queue, &head))
 	{
-		*first = coder->dongle_a;
-		*second = coder->dongle_b;
-		return ;
+		if (head.coder_id == coder_id)
+			return (1);
 	}
-	*first = coder->dongle_b;
-	*second = coder->dongle_a;
+	return (0);
+}
+
+int	cooldown_done(t_dongle *dongle)
+{
+	if (dongle->available_at == 0)
+		return (1);
+	return (get_time_ms() >= dongle->available_at);
 }

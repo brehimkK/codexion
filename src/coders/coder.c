@@ -1,74 +1,111 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   coder.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: brel-bou <brel-bou@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/10/05 11:02:07 by brel-bou          #+#    #+#             */
+/*   Updated: 2026/10/05 11:02:08 by brel-bou         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "codexion.h"
 
-void *coder_routine(void *arg)
+static int	compile_coder(t_coder *coder, long time_to_compile)
 {
-    int c_id;
-    t_coder *coder;
-    long current_time;
-    long time_to_re;
-    long time_to_de;
-    long time_to_co;
+	long	current_time;
 
-    coder = arg;
-    time_to_co =coder->simulation->config.time_to_compile;
-    time_to_de =coder->simulation->config.time_to_debug;
-    time_to_re = coder->simulation->config.time_to_refactor;
-    while (is_running(coder->simulation))
-    {
-        if (!take_dongles(coder))
-            return (NULL);
-        pthread_mutex_lock(&coder->mutex);
-        coder->last_compile = get_time_ms();
-        current_time = coder->last_compile - coder->simulation->start_time;
-        pthread_mutex_unlock(&coder->mutex);
-        
-        pthread_mutex_lock(&coder->simulation->log_mutex);
-        c_id = coder->id;
-        printf("%ld %d is compiling\n" , current_time, c_id);
-        pthread_mutex_unlock(&coder->simulation->log_mutex);
-        safe_sleep(coder->simulation,time_to_co);
-        if(!is_running(coder->simulation))
-        {
-            release_dongles(coder);
-            return(NULL);
-                
-        }
-        pthread_mutex_lock(&coder->mutex);
-        coder->compile_count++;
-        pthread_mutex_unlock(&coder->mutex);
-        release_dongles(coder);
-        current_time = get_time_ms() - coder->simulation->start_time;
-        pthread_mutex_lock(&coder->simulation->log_mutex);
-        printf("%ld %d is debugging\n" , current_time, c_id);
-        pthread_mutex_unlock(&coder->simulation->log_mutex);
-        safe_sleep(coder->simulation, time_to_de);
-        if(!is_running(coder->simulation))
-            return(NULL);
-        current_time = get_time_ms() - coder->simulation->start_time;
-        pthread_mutex_lock(&coder->simulation->log_mutex);
-        printf("%ld %d is refactoring\n" , current_time, c_id);
-        pthread_mutex_unlock(&coder->simulation->log_mutex);
-        
-        safe_sleep(coder->simulation,time_to_re);
-        if(!is_running(coder->simulation))
-            return(NULL);
-        if (coder_is_finished(coder))
-        {
-            pthread_mutex_lock(&coder->mutex);
-            coder->finished = 1;
-            pthread_mutex_unlock(&coder->mutex);
+	if (!take_dongles(coder))
+		return (0);
+	pthread_mutex_lock(&coder->mutex);
+	coder->last_compile = get_time_ms();
+	current_time = coder->last_compile - coder->simulation->start_time;
+	pthread_mutex_unlock(&coder->mutex);
+	pthread_mutex_lock(&coder->simulation->log_mutex);
+	printf("%ld %d is compiling\n", current_time, coder->id);
+	pthread_mutex_unlock(&coder->simulation->log_mutex);
+	safe_sleep(coder->simulation, time_to_compile);
+	if (!is_running(coder->simulation))
+	{
+		release_dongles(coder);
+		return (0);
+	}
+	pthread_mutex_lock(&coder->mutex);
+	coder->compile_count++;
+	pthread_mutex_unlock(&coder->mutex);
+	release_dongles(coder);
+	return (1);
+}
 
-            pthread_mutex_lock(&coder->simulation->finished_mutex);
-            coder->simulation->finished_coders++;
-            if (coder->simulation->finished_coders
-                == coder->simulation->config.coders)
-            {
-                stop_simulation(coder->simulation);
-                wake_all(coder->simulation);
-            }
-            pthread_mutex_unlock(&coder->simulation->finished_mutex);
-            return (NULL);
-        }
-    }
-    return(NULL);
+static int	debug_coder(t_coder *coder, long time_to_debug)
+{
+	long	current_time;
+
+	current_time = get_time_ms() - coder->simulation->start_time;
+	pthread_mutex_lock(&coder->simulation->log_mutex);
+	printf("%ld %d is debugging\n", current_time, coder->id);
+	pthread_mutex_unlock(&coder->simulation->log_mutex);
+	safe_sleep(coder->simulation, time_to_debug);
+	if (!is_running(coder->simulation))
+		return (0);
+	return (1);
+}
+
+static int	refactor_coder(t_coder *coder, long time_to_refactor)
+{
+	long	current_time;
+
+	current_time = get_time_ms() - coder->simulation->start_time;
+	pthread_mutex_lock(&coder->simulation->log_mutex);
+	printf("%ld %d is refactoring\n", current_time, coder->id);
+	pthread_mutex_unlock(&coder->simulation->log_mutex);
+	safe_sleep(coder->simulation, time_to_refactor);
+	if (!is_running(coder->simulation))
+		return (0);
+	return (1);
+}
+
+static int	finish_coder(t_coder *coder)
+{
+	if (!coder_is_finished(coder))
+		return (0);
+	pthread_mutex_lock(&coder->mutex);
+	coder->finished = 1;
+	pthread_mutex_unlock(&coder->mutex);
+	pthread_mutex_lock(&coder->simulation->finished_mutex);
+	coder->simulation->finished_coders++;
+	if (coder->simulation->finished_coders
+		== coder->simulation->config.coders)
+	{
+		stop_simulation(coder->simulation);
+		wake_all(coder->simulation);
+	}
+	pthread_mutex_unlock(&coder->simulation->finished_mutex);
+	return (1);
+}
+
+void	*coder_routine(void *arg)
+{
+	t_coder	*coder;
+	long	time_to_re;
+	long	time_to_de;
+	long	time_to_co;
+
+	coder = arg;
+	time_to_co = coder->simulation->config.time_to_compile;
+	time_to_de = coder->simulation->config.time_to_debug;
+	time_to_re = coder->simulation->config.time_to_refactor;
+	while (is_running(coder->simulation))
+	{
+		if (!compile_coder(coder, time_to_co))
+			return (NULL);
+		if (!debug_coder(coder, time_to_de))
+			return (NULL);
+		if (!refactor_coder(coder, time_to_re))
+			return (NULL);
+		if (finish_coder(coder))
+			return (NULL);
+	}
+	return (NULL);
 }

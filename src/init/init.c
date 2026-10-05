@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   init.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: brel-bou <brel-bou@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/10/05 13:01:50 by brel-bou          #+#    #+#             */
+/*   Updated: 2026/10/05 14:15:41 by brel-bou         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "codexion.h"
 
 static void	cleanup_init(t_simulation *simulation)
@@ -13,7 +25,7 @@ static void	cleanup_init(t_simulation *simulation)
 	simulation->coders = NULL;
 }
 
-int	init_simulation(t_simulation *simulation, t_config *config)
+static void	set_simulation(t_simulation *simulation, t_config *config)
 {
 	simulation->config = *config;
 	simulation->coders = NULL;
@@ -22,7 +34,10 @@ int	init_simulation(t_simulation *simulation, t_config *config)
 	simulation->start_time = 0;
 	simulation->running = 0;
 	simulation->request_counter = 0;
+}
 
+static int	init_mutexes(t_simulation *simulation)
+{
 	if (pthread_mutex_init(&simulation->counter_mutex, NULL) != 0)
 		return (0);
 	if (pthread_mutex_init(&simulation->mutex, NULL) != 0)
@@ -36,6 +51,11 @@ int	init_simulation(t_simulation *simulation, t_config *config)
 		pthread_mutex_destroy(&simulation->counter_mutex);
 		return (0);
 	}
+	return (1);
+}
+
+static int	allocate_simulation(t_simulation *simulation)
+{
 	simulation->coders = malloc(sizeof(t_coder)
 			* simulation->config.coders);
 	if (simulation->coders == NULL)
@@ -56,6 +76,16 @@ int	init_simulation(t_simulation *simulation, t_config *config)
 		pthread_mutex_destroy(&simulation->counter_mutex);
 		return (0);
 	}
+	return (1);
+}
+
+int	init_simulation(t_simulation *simulation, t_config *config)
+{
+	set_simulation(simulation, config);
+	if (!init_mutexes(simulation))
+		return (0);
+	if (!allocate_simulation(simulation))
+		return (0);
 	if (!init_dongles(simulation))
 	{
 		cleanup_init(simulation);

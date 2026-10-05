@@ -1,26 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   dongle_order.c                                     :+:      :+:    :+:   */
+/*   coders_compile_cont.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: brel-bou <brel-bou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/10/05 12:32:18 by brel-bou          #+#    #+#             */
-/*   Updated: 2026/10/05 12:37:56 by brel-bou         ###   ########.fr       */
+/*   Created: 2026/10/05 14:08:04 by brel-bou          #+#    #+#             */
+/*   Updated: 2026/10/05 14:08:05 by brel-bou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
 
-void	get_dongle_order(t_coder *coder, t_dongle **first,
-		t_dongle **second)
+int	coder_is_finished(t_coder *coder)
 {
-	if (coder->dongle_a->id <= coder->dongle_b->id)
-	{
-		*first = coder->dongle_a;
-		*second = coder->dongle_b;
-		return ;
-	}
-	*first = coder->dongle_b;
-	*second = coder->dongle_a;
+	int	count;
+
+	pthread_mutex_lock(&coder->mutex);
+	count = coder->compile_count;
+	pthread_mutex_unlock(&coder->mutex);
+	if (count >= coder->simulation->config.compile_required)
+		return (1);
+	return (0);
 }

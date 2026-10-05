@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   queue.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: brel-bou <brel-bou@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/10/05 12:52:37 by brel-bou          #+#    #+#             */
+/*   Updated: 2026/10/05 12:57:10 by brel-bou         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "codexion.h"
 
 void	init_queue(t_queue *queue, int (*cmp)(t_request, t_request))
@@ -58,28 +70,5 @@ int	queue_pop(t_queue *queue, t_request *request)
 	queue->head = rm_node->next;
 	queue->size--;
 	free(rm_node);
-	return (1);
-}
-
-void	queue_clear(t_queue *queue)
-{
-	t_node	*current;
-
-	if (queue == NULL)
-		return ;
-	while (queue->head != NULL)
-	{
-		current = queue->head->next;
-		free(queue->head);
-		queue->head = current;
-	}
-	queue->size = 0;
-}
-
-int	queue_peek(t_queue *queue, t_request *request)
-{
-	if (queue == NULL || queue->head == NULL)
-		return (0);
-	*request = queue->head->req;
 	return (1);
 }
