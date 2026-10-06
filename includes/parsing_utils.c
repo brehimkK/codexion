@@ -6,7 +6,7 @@
 /*   By: brel-bou <brel-bou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/05 11:00:00 by brel-bou          #+#    #+#             */
-/*   Updated: 2026/10/05 12:02:17 by brel-bou         ###   ########.fr       */
+/*   Updated: 2026/10/05 15:49:13 by brel-bou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,15 +44,18 @@ static int	set_int_arg(long res, int i, t_config *config)
 		}
 		config->coders = (int)res;
 		if (config->coders == 0)
-			return (printf("Error: number_of_coders must be greater than 0\n"), 0);
+			return (printf("Error: number_of_coders must "
+					"be greater than 0\n"), 0);
 	}
 	else if (i == 6)
 	{
 		if (res > INT_MAX)
-			return (printf("Error: number_of_compiles_required is too large\n"), 0);
+			return (printf("Error: number_of_compiles_required"
+					" is too large\n"), 0);
 		config->compile_required = (int)res;
 		if (config->compile_required == 0)
-			return (printf("Error: number_of_compiles_required must be greater than 0\n"), 0);
+			return (printf("Error: number_of_compiles_required"
+					" must be greater than 0\n"), 0);
 	}
 	return (1);
 }
@@ -62,13 +65,16 @@ static int	check_time_arg(long res, int i)
 	if (res != 0 || i == 7)
 		return (1);
 	if (i == 2)
-		printf("Error: time_to_burnout must be greater than 0\n");
+		printf("Error: time_to_burnout"
+			" must be greater than 0\n");
 	else if (i == 3)
-		printf("Error: time_to_compile must be greater than 0\n");
+		printf("Error: time_to_compile"
+			" must be greater than 0\n");
 	else if (i == 4)
 		printf("Error: time_to_debug must be greater than 0\n");
 	else if (i == 5)
-		printf("Error: time_to_refactor must be greater than 0\n");
+		printf("Error: time_to_refactor "
+			"must be greater than 0\n");
 	return (0);
 }
 
