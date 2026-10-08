@@ -1,3 +1,4 @@
+
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
@@ -6,7 +7,7 @@
 /*   By: brel-bou <brel-bou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/05 11:00:00 by brel-bou          #+#    #+#             */
-/*   Updated: 2026/10/05 17:34:32 by brel-bou         ###   ########.fr       */
+/*   Updated: 2026/10/08 16:38:41 by brel-bou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,17 +47,22 @@ static void	wait_for_dongle(t_coder *coder, t_dongle *dongle)
 	}
 }
 
-static void	log_dongle(t_coder *coder, long time)
+static void	log_dongle(t_coder *coder)
 {
+	long	time;
+
 	pthread_mutex_lock(&coder->simulation->log_mutex);
-	printf("%ld %d has taken a dongle\n", time, coder->id);
+	time = get_time_ms() - coder->simulation->start_time;
+	if (is_running(coder->simulation))
+		// printf("%ld %d has taken a dongle\n", time, coder->id);
+		print
+		
 	pthread_mutex_unlock(&coder->simulation->log_mutex);
 }
 
 static int	acquire_one(t_coder *coder, t_dongle *dongle)
 {
 	t_request	request;
-	long		time;
 
 	request = create_request(coder);
 	pthread_mutex_lock(&dongle->mutex);
@@ -65,6 +71,8 @@ static int	acquire_one(t_coder *coder, t_dongle *dongle)
 		pthread_mutex_unlock(&dongle->mutex);
 		return (0);
 	}
+	// printf("C%d requests D%d (order=%ld)\n",
+    // coder->id, dongle->id, request.arrival_order);
 	wait_for_dongle(coder, dongle);
 	if (!is_running(coder->simulation))
 	{
@@ -73,9 +81,7 @@ static int	acquire_one(t_coder *coder, t_dongle *dongle)
 	}
 	queue_pop(&dongle->queue, &request);
 	dongle->in_use = 1;
-	time = get_time_ms() - coder->simulation->start_time;
 	pthread_mutex_unlock(&dongle->mutex);
-	log_dongle(coder, time);
 	return (1);
 }
 
@@ -89,6 +95,7 @@ int	take_dongles(t_coder *coder)
 		return (0);
 	if (!acquire_one(coder, first))
 		return (0);
+	log_dongle(coder);
 	if (!is_running(coder->simulation))
 	{
 		release_dongle(coder->simulation, first);
@@ -99,6 +106,7 @@ int	take_dongles(t_coder *coder)
 		release_dongle(coder->simulation, first);
 		return (0);
 	}
+	log_dongle(coder);
 	if (!is_running(coder->simulation))
 	{
 		release_dongles(coder);

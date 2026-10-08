@@ -6,7 +6,7 @@
 /*   By: brel-bou <brel-bou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/05 11:02:07 by brel-bou          #+#    #+#             */
-/*   Updated: 2026/10/05 11:02:08 by brel-bou         ###   ########.fr       */
+/*   Updated: 2026/10/08 21:37:49 by brel-bou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,6 +96,9 @@ void	*coder_routine(void *arg)
 	time_to_co = coder->simulation->config.time_to_compile;
 	time_to_de = coder->simulation->config.time_to_debug;
 	time_to_re = coder->simulation->config.time_to_refactor;
+	if (coder->id % 2 != 0)
+		safe_sleep(coder->simulation,
+			coder->simulation->config.time_to_compile + coder->simulation->config.dongle_cooldown);
 	while (is_running(coder->simulation))
 	{
 		if (!compile_coder(coder, time_to_co))

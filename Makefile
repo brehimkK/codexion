@@ -15,6 +15,7 @@ SRCS = \
 	src/dongles/acquire_dongle.c \
 	src/dongles/dongle_order.c \
 	src/dongles/release_dongle.c \
+	src/dongles/zaka.c \
 	src/dongles/dongle_utils.c\
 	src/init/init.c \
 	src/init/init_coders.c \
