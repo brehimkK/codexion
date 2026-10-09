@@ -44,7 +44,7 @@ void	print_log(t_coder *coder, char *msg)
 	time = get_time_ms() - coder->simulation->start_time;
 	ft_putnbr_ul(time);
 	write(1, " ", 1);
-	ft_putnbr_fd(coder->id + 1, 1);
+	ft_putnbr_fd(coder->id, 1);
 	write(1, msg, ft_strlen(msg));
 	pthread_mutex_unlock(&coder->simulation->log_mutex);
 }

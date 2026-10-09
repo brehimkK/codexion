@@ -14,17 +14,12 @@
 
 static int	compile_coder(t_coder *coder, long time_to_compile)
 {
-	long	current_time;
-
 	if (!take_dongles(coder))
 		return (0);
 	pthread_mutex_lock(&coder->mutex);
 	coder->last_compile = get_time_ms();
-	current_time = coder->last_compile - coder->simulation->start_time;
 	pthread_mutex_unlock(&coder->mutex);
-	pthread_mutex_lock(&coder->simulation->log_mutex);
-	printf("%ld %d is compiling\n", current_time, coder->id);
-	pthread_mutex_unlock(&coder->simulation->log_mutex);
+	print_log(coder, " is compiling\n");
 	safe_sleep(coder->simulation, time_to_compile);
 	if (!is_running(coder->simulation))
 	{
@@ -40,12 +35,7 @@ static int	compile_coder(t_coder *coder, long time_to_compile)
 
 static int	debug_coder(t_coder *coder, long time_to_debug)
 {
-	long	current_time;
-
-	current_time = get_time_ms() - coder->simulation->start_time;
-	pthread_mutex_lock(&coder->simulation->log_mutex);
-	printf("%ld %d is debugging\n", current_time, coder->id);
-	pthread_mutex_unlock(&coder->simulation->log_mutex);
+	print_log(coder, " is debugging\n");
 	safe_sleep(coder->simulation, time_to_debug);
 	if (!is_running(coder->simulation))
 		return (0);
@@ -54,12 +44,7 @@ static int	debug_coder(t_coder *coder, long time_to_debug)
 
 static int	refactor_coder(t_coder *coder, long time_to_refactor)
 {
-	long	current_time;
-
-	current_time = get_time_ms() - coder->simulation->start_time;
-	pthread_mutex_lock(&coder->simulation->log_mutex);
-	printf("%ld %d is refactoring\n", current_time, coder->id);
-	pthread_mutex_unlock(&coder->simulation->log_mutex);
+	print_log(coder, " is refactoring\n");
 	safe_sleep(coder->simulation, time_to_refactor);
 	if (!is_running(coder->simulation))
 		return (0);
@@ -98,7 +83,8 @@ void	*coder_routine(void *arg)
 	time_to_re = coder->simulation->config.time_to_refactor;
 	if (coder->id % 2 != 0)
 		safe_sleep(coder->simulation,
-			coder->simulation->config.time_to_compile + coder->simulation->config.dongle_cooldown);
+			coder->simulation->config.time_to_compile
+			+ coder->simulation->config.dongle_cooldown);
 	while (is_running(coder->simulation))
 	{
 		if (!compile_coder(coder, time_to_co))

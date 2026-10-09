@@ -1,4 +1,3 @@
-
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
@@ -12,24 +11,7 @@
 /* ************************************************************************** */
 
 #include "codexion.h"
-#include <time.h>
-
-static void	wait_until_ready(t_dongle *dongle)
-{
-	struct timeval	timval;
-	struct timespec	tspec;
-	long			remaining;
-	long			ms;
-
-	remaining = dongle->available_at - get_time_ms();
-	if (remaining <= 0)
-		return ;
-	gettimeofday(&timval, NULL);
-	ms = (timval.tv_usec / 1000) + remaining;
-	tspec.tv_sec = timval.tv_sec + (ms / 1000);
-	tspec.tv_nsec = (ms % 1000) * 1000000L;
-	pthread_cond_timedwait(&dongle->condition, &dongle->mutex, &tspec);
-}
+// #include <time.h>
 
 static void	wait_for_dongle(t_coder *coder, t_dongle *dongle)
 {
@@ -49,15 +31,8 @@ static void	wait_for_dongle(t_coder *coder, t_dongle *dongle)
 
 static void	log_dongle(t_coder *coder)
 {
-	long	time;
-
-	pthread_mutex_lock(&coder->simulation->log_mutex);
-	time = get_time_ms() - coder->simulation->start_time;
 	if (is_running(coder->simulation))
-		// printf("%ld %d has taken a dongle\n", time, coder->id);
-		print
-		
-	pthread_mutex_unlock(&coder->simulation->log_mutex);
+		print_log(coder, " has taken a dongle\n");
 }
 
 static int	acquire_one(t_coder *coder, t_dongle *dongle)
@@ -71,8 +46,6 @@ static int	acquire_one(t_coder *coder, t_dongle *dongle)
 		pthread_mutex_unlock(&dongle->mutex);
 		return (0);
 	}
-	// printf("C%d requests D%d (order=%ld)\n",
-    // coder->id, dongle->id, request.arrival_order);
 	wait_for_dongle(coder, dongle);
 	if (!is_running(coder->simulation))
 	{
@@ -82,6 +55,23 @@ static int	acquire_one(t_coder *coder, t_dongle *dongle)
 	queue_pop(&dongle->queue, &request);
 	dongle->in_use = 1;
 	pthread_mutex_unlock(&dongle->mutex);
+	return (1);
+}
+
+static int	take_second_dongle(t_coder *coder, t_dongle *first,
+		t_dongle *second)
+{
+	if (!acquire_one(coder, second))
+	{
+		release_dongle(coder->simulation, first);
+		return (0);
+	}
+	log_dongle(coder);
+	if (!is_running(coder->simulation))
+	{
+		release_dongles(coder);
+		return (0);
+	}
 	return (1);
 }
 
@@ -101,16 +91,5 @@ int	take_dongles(t_coder *coder)
 		release_dongle(coder->simulation, first);
 		return (0);
 	}
-	if (!acquire_one(coder, second))
-	{
-		release_dongle(coder->simulation, first);
-		return (0);
-	}
-	log_dongle(coder);
-	if (!is_running(coder->simulation))
-	{
-		release_dongles(coder);
-		return (0);
-	}
-	return (1);
+	return (take_second_dongle(coder, first, second));
 }

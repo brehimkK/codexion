@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "codexion.h"
+#include "time.h"
 
 int	request_is_first(t_dongle *dongle, int coder_id)
 {
@@ -29,4 +30,21 @@ int	cooldown_done(t_dongle *dongle)
 	if (dongle->available_at == 0)
 		return (1);
 	return (get_time_ms() >= dongle->available_at);
+}
+
+void	wait_until_ready(t_dongle *dongle)
+{
+	struct timeval	timval;
+	struct timespec	tspec;
+	long			remaining;
+	long			ms;
+
+	remaining = dongle->available_at - get_time_ms();
+	if (remaining <= 0)
+		return ;
+	gettimeofday(&timval, NULL);
+	ms = (timval.tv_usec / 1000) + remaining;
+	tspec.tv_sec = timval.tv_sec + (ms / 1000);
+	tspec.tv_nsec = (ms % 1000) * 1000000L;
+	pthread_cond_timedwait(&dongle->condition, &dongle->mutex, &tspec);
 }

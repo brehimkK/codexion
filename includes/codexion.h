@@ -143,8 +143,12 @@ int		set_numeric_arg(long res, int i, t_config *config);
 void	set_coder_last_c(t_simulation *simulation, long time);
 int		request_is_first(t_dongle *dongle, int coder_id);
 int		cooldown_done(t_dongle *dongle);
-t_request	create_request(t_coder *coder);
+t_request create_request(t_coder *coder);
 void	cleanup_simulation(t_simulation *simulation);
 void	set_coder_last_c(t_simulation *simulation, long time);
+int		ft_strlen(char *msg);
+void	ft_putnbr_fd(int n, int fd);
+void	print_log(t_coder *coder, char *msg);
+void	wait_until_ready(t_dongle *dongle);
 
 #endif
