@@ -6,7 +6,7 @@
 /*   By: brel-bou <brel-bou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/04 18:35:23 by brel-bou          #+#    #+#             */
-/*   Updated: 2026/10/05 14:10:50 by brel-bou         ###   ########.fr       */
+/*   Updated: 2026/10/10 17:34:46 by brel-bou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -143,7 +143,7 @@ int		set_numeric_arg(long res, int i, t_config *config);
 void	set_coder_last_c(t_simulation *simulation, long time);
 int		request_is_first(t_dongle *dongle, int coder_id);
 int		cooldown_done(t_dongle *dongle);
-t_request create_request(t_coder *coder);
+void	wait_for_dongle(t_coder *coder, t_dongle *dongle);
 void	cleanup_simulation(t_simulation *simulation);
 void	set_coder_last_c(t_simulation *simulation, long time);
 int		ft_strlen(char *msg);

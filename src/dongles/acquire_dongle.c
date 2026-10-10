@@ -6,33 +6,32 @@
 /*   By: brel-bou <brel-bou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/05 11:00:00 by brel-bou          #+#    #+#             */
-/*   Updated: 2026/10/08 16:38:41 by brel-bou         ###   ########.fr       */
+/*   Updated: 2026/10/10 17:35:21 by brel-bou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
-// #include <time.h>
-
-static void	wait_for_dongle(t_coder *coder, t_dongle *dongle)
-{
-	while (is_running(coder->simulation)
-		&& (!request_is_first(dongle, coder->id)
-			|| dongle->in_use
-			|| !cooldown_done(dongle)))
-	{
-		if (request_is_first(dongle, coder->id)
-			&& !dongle->in_use
-			&& !cooldown_done(dongle))
-			wait_until_ready(dongle);
-		else
-			pthread_cond_wait(&dongle->condition, &dongle->mutex);
-	}
-}
 
 static void	log_dongle(t_coder *coder)
 {
 	if (is_running(coder->simulation))
 		print_log(coder, " has taken a dongle\n");
+}
+
+static t_request	create_request(t_coder *coder)
+{
+	t_request	request;
+	long		last_compile;
+
+	request.coder_id = coder->id;
+	request.arrival_time = get_time_ms();
+	request.arrival_order = get_next_order(coder->simulation);
+	pthread_mutex_lock(&coder->mutex);
+	last_compile = coder->last_compile;
+	pthread_mutex_unlock(&coder->mutex);
+	request.deadline = last_compile
+		+ coder->simulation->config.time_to_burnout;
+	return (request);
 }
 
 static int	acquire_one(t_coder *coder, t_dongle *dongle)
