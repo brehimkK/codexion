@@ -13,11 +13,14 @@ SRCS = \
 	src/coders/coders_compile_cont.c\
 	src/coders/time.c\
 	src/dongles/acquire_dongle.c \
+	src/dongles/pair_request.c \
+	src/dongles/pair_wait.c \
 	src/dongles/dongle_order.c \
 	src/dongles/release_dongle.c \
 	src/dongles/zaka.c \
 	src/dongles/dongle_utils.c\
 	src/init/init.c \
+	src/init/init_pair.c \
 	src/init/init_coders.c \
 	src/init/init_dongles.c \
 	src/monitor/monitor.c \

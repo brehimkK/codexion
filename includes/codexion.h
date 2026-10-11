@@ -6,7 +6,7 @@
 /*   By: brel-bou <brel-bou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/04 18:35:23 by brel-bou          #+#    #+#             */
-/*   Updated: 2026/10/10 17:34:46 by brel-bou         ###   ########.fr       */
+/*   Updated: 2026/10/11 15:52:14 by brel-bou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,6 +88,8 @@ typedef struct s_simulation
 {
 	long			request_counter;
 	pthread_mutex_t	counter_mutex;
+	pthread_mutex_t	pair_mutex;
+	pthread_cond_t	pair_condition;
 	t_config		config;
 	t_coder			*coders;
 	t_dongle		*dongles;
@@ -150,5 +152,14 @@ int		ft_strlen(char *msg);
 void	ft_putnbr_fd(int n, int fd);
 void	print_log(t_coder *coder, char *msg);
 void	wait_until_ready(t_dongle *dongle);
+int		init_pair_sync(t_simulation *simulation);
+void	destroy_pair_sync(t_simulation *simulation);
+void	destroy_basic_sync(t_simulation *simulation);
+void	lock_dongle_pair(t_dongle *first, t_dongle *second);
+void	unlock_dongle_pair(t_dongle *first, t_dongle *second);
+int		queue_request_pair(t_coder *coder, t_dongle *first,
+			t_dongle *second);
+int		wait_and_take_pair(t_coder *coder, t_dongle *first,
+			t_dongle *second);
 
 #endif

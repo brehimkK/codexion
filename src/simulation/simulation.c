@@ -26,6 +26,9 @@ void	wake_all(t_simulation *simulation)
 {
 	int	i;
 
+	pthread_mutex_lock(&simulation->pair_mutex);
+	pthread_cond_broadcast(&simulation->pair_condition);
+	pthread_mutex_unlock(&simulation->pair_mutex);
 	i = 0;
 	while (i < simulation->config.coders)
 	{

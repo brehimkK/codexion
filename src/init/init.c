@@ -18,9 +18,8 @@ static void	cleanup_init(t_simulation *simulation)
 		free(simulation->dongles);
 	if (simulation->coders != NULL)
 		free(simulation->coders);
-	pthread_mutex_destroy(&simulation->log_mutex);
-	pthread_mutex_destroy(&simulation->mutex);
-	pthread_mutex_destroy(&simulation->counter_mutex);
+	destroy_pair_sync(simulation);
+	destroy_basic_sync(simulation);
 	simulation->dongles = NULL;
 	simulation->coders = NULL;
 }
@@ -51,6 +50,11 @@ static int	init_mutexes(t_simulation *simulation)
 		pthread_mutex_destroy(&simulation->counter_mutex);
 		return (0);
 	}
+	if (!init_pair_sync(simulation))
+	{
+		destroy_basic_sync(simulation);
+		return (0);
+	}
 	return (1);
 }
 
@@ -60,9 +64,8 @@ static int	allocate_simulation(t_simulation *simulation)
 			* simulation->config.coders);
 	if (simulation->coders == NULL)
 	{
-		pthread_mutex_destroy(&simulation->log_mutex);
-		pthread_mutex_destroy(&simulation->mutex);
-		pthread_mutex_destroy(&simulation->counter_mutex);
+		destroy_pair_sync(simulation);
+		destroy_basic_sync(simulation);
 		return (0);
 	}
 	simulation->dongles = malloc(sizeof(t_dongle)
@@ -71,9 +74,8 @@ static int	allocate_simulation(t_simulation *simulation)
 	{
 		free(simulation->coders);
 		simulation->coders = NULL;
-		pthread_mutex_destroy(&simulation->log_mutex);
-		pthread_mutex_destroy(&simulation->mutex);
-		pthread_mutex_destroy(&simulation->counter_mutex);
+		destroy_pair_sync(simulation);
+		destroy_basic_sync(simulation);
 		return (0);
 	}
 	return (1);

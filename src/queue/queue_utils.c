@@ -34,3 +34,24 @@ int	queue_peek(t_queue *queue, t_request *request)
 	*request = queue->head->req;
 	return (1);
 }
+
+int	queue_remove_coder(t_queue *queue, int coder_id)
+{
+	t_node	**node;
+	t_node	*removed;
+
+	node = &queue->head;
+	while (*node != NULL)
+	{
+		if ((*node)->req.coder_id == coder_id)
+		{
+			removed = *node;
+			*node = removed->next;
+			free(removed);
+			queue->size--;
+			return (1);
+		}
+		node = &(*node)->next;
+	}
+	return (0);
+}

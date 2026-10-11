@@ -24,6 +24,7 @@ void	cleanup_simulation(t_simulation *simulation)
 		i++;
 	}
 	cleanup_dongles(simulation, simulation->config.coders);
+	destroy_pair_sync(simulation);
 	pthread_mutex_destroy(&simulation->finished_mutex);
 	pthread_mutex_destroy(&simulation->log_mutex);
 	pthread_mutex_destroy(&simulation->mutex);
