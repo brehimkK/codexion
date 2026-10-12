@@ -83,4 +83,4 @@ make re      # Rebuild from scratch
 - [Operating Systems: Three Easy Pieces — Concurrency chapters](https://pages.cs.wisc.edu/~remzi/OSTEP/)
 - [Deadlock and Coffman conditions](https://en.wikipedia.org/wiki/Deadlock)
 
-**AI use:** AI assistance was used to explain and review the execution flow, POSIX synchronization, FIFO/EDF queue scheduling, cooldowns, and burnout behavior; investigate intermittent starvation; help develop the coordinated pair-acquisition approach and its related queue, wait, release, initialization, and cleanup code; produce educational visualizations; and draft this README. The implementation and behavior remain subject to compilation, runtime testing, and evaluation.
+**AI use:** AI assistance was used to explain and review the execution flow, POSIX synchronization, FIFO/EDF queue scheduling, cooldowns, and burnout behavior; investigate intermittent starvation; help develop the coordinated pair-acquisition approach and its related queue, wait, release, initialization, and cleanup code; produce educational visualizations. The implementation and behavior remain subject to compilation, runtime testing, and evaluation.
