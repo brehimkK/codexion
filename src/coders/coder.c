@@ -6,7 +6,7 @@
 /*   By: brel-bou <brel-bou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/05 11:02:07 by brel-bou          #+#    #+#             */
-/*   Updated: 2026/10/11 20:19:36 by brel-bou         ###   ########.fr       */
+/*   Updated: 2026/10/12 14:22:33 by brel-bou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,7 @@ void	*coder_routine(void *arg)
 	time_to_re = coder->simulation->config.time_to_refactor;
 	if (coder->id % 2 != 0)
 		safe_sleep(coder->simulation,
-		coder->simulation->config.time_to_compile);
+			coder->simulation->config.time_to_compile);
 	while (is_running(coder->simulation))
 	{
 		if (!compile_coder(coder, time_to_co))

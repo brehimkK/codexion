@@ -6,7 +6,7 @@
 /*   By: brel-bou <brel-bou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/05 12:52:33 by brel-bou          #+#    #+#             */
-/*   Updated: 2026/10/05 12:57:23 by brel-bou         ###   ########.fr       */
+/*   Updated: 2026/10/12 14:22:07 by brel-bou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,21 +37,25 @@ int	queue_peek(t_queue *queue, t_request *request)
 
 int	queue_remove_coder(t_queue *queue, int coder_id)
 {
-	t_node	**node;
-	t_node	*removed;
+	t_node	*current;
+	t_node	*previous;
 
-	node = &queue->head;
-	while (*node != NULL)
+	current = queue->head;
+	previous = NULL;
+	while (current != NULL)
 	{
-		if ((*node)->req.coder_id == coder_id)
+		if (current->req.coder_id == coder_id)
 		{
-			removed = *node;
-			*node = removed->next;
-			free(removed);
+			if (previous == NULL)
+				queue->head = current->next;
+			else
+				previous->next = current->next;
+			free(current);
 			queue->size--;
 			return (1);
 		}
-		node = &(*node)->next;
+		previous = current;
+		current = current->next;
 	}
 	return (0);
 }
