@@ -45,6 +45,16 @@ make clean   # Remove object files
 make fclean  # Remove object files and executable
 make re      # Rebuild from scratch
 ```
+## Resources
+
+- [POSIX threads overview — Linux man-pages](https://man7.org/linux/man-pages/man7/pthreads.7.html)
+- [`pthread_create(3)` — Thread creation](https://man7.org/linux/man-pages/man3/pthread_create.3.html)
+- [`pthread_mutex_lock(3p)` — Mutex locking](https://man7.org/linux/man-pages/man3/pthread_mutex_lock.3p.html)
+- [`pthread_cond_wait(3p)` — Condition variables and timed waits](https://man7.org/linux/man-pages/man3/pthread_cond_wait.3p.html)
+- [Operating Systems: Three Easy Pieces — Concurrency chapters](https://pages.cs.wisc.edu/~remzi/OSTEP/)
+- [Deadlock and Coffman conditions](https://en.wikipedia.org/wiki/Deadlock)
+
+**AI use:** AI assistance was used to explain and review the execution flow, POSIX synchronization, FIFO/EDF queue scheduling, cooldowns, and burnout behavior; investigate intermittent starvation; help develop the coordinated pair-acquisition approach and its related queue, wait, release, initialization, and cleanup code; produce educational visualizations. The implementation and behavior remain subject to compilation, runtime testing, and evaluation.
 
 ## Blocking cases handled
 
@@ -74,13 +84,3 @@ make re      # Rebuild from scratch
 
 **Custom events:** No separate custom event object is implemented. Condition-variable broadcasts and the shared `running` flag provide event-style wakeup and stop propagation.
 
-## Resources
-
-- [POSIX threads overview — Linux man-pages](https://man7.org/linux/man-pages/man7/pthreads.7.html)
-- [`pthread_create(3)` — Thread creation](https://man7.org/linux/man-pages/man3/pthread_create.3.html)
-- [`pthread_mutex_lock(3p)` — Mutex locking](https://man7.org/linux/man-pages/man3/pthread_mutex_lock.3p.html)
-- [`pthread_cond_wait(3p)` — Condition variables and timed waits](https://man7.org/linux/man-pages/man3/pthread_cond_wait.3p.html)
-- [Operating Systems: Three Easy Pieces — Concurrency chapters](https://pages.cs.wisc.edu/~remzi/OSTEP/)
-- [Deadlock and Coffman conditions](https://en.wikipedia.org/wiki/Deadlock)
-
-**AI use:** AI assistance was used to explain and review the execution flow, POSIX synchronization, FIFO/EDF queue scheduling, cooldowns, and burnout behavior; investigate intermittent starvation; help develop the coordinated pair-acquisition approach and its related queue, wait, release, initialization, and cleanup code; produce educational visualizations. The implementation and behavior remain subject to compilation, runtime testing, and evaluation.
